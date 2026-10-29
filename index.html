@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Hospital patient waiting-time analytics dashboard using synthetic visit data.">
+<title>CareFlow | Hospital Wait-Time Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root{--navy:#142d4e;--blue:#2d6cdf;--cyan:#32b8c6;--ink:#1e293b;--muted:#64748b;--line:#e6edf5;--bg:#f4f7fb;--white:#fff;--green:#16856b;--orange:#d97706;--red:#d84b58;--shadow:0 6px 24px rgba(25,50,80,.055)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",sans-serif}button,select,input{font:inherit}.app{display:grid;grid-template-columns:245px minmax(0,1fr);min-height:100vh}.sidebar{background:var(--navy);color:#e8f0fb;padding:25px 18px;display:flex;flex-direction:column;gap:28px}.brand{display:flex;gap:11px;align-items:center;padding:0 8px}.brand-icon{width:42px;height:42px;border-radius:13px;background:#2d6cdf;display:grid;place-items:center;color:white;font-size:24px;font-weight:800}.brand h1{font:800 17px Manrope;margin:0;letter-spacing:-.5px}.brand p{font-size:11px;color:#a9bed8;margin:3px 0 0}.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#8fa7c5;padding:0 12px;margin-bottom:8px}.nav-item{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;color:#c8d7e9;font-size:13px;margin:3px 0}.nav-item.active{background:#244a78;color:white;font-weight:700}.nav-icon{width:18px;text-align:center;font-size:16px}.side-note{margin-top:auto;border:1px solid #315172;background:#19395e;border-radius:12px;padding:14px;font-size:11px;line-height:1.6;color:#c7d7e8}.side-note strong{display:block;color:#fff;font-size:12px;margin-bottom:5px}.main{min-width:0;padding:28px 32px 35px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:25px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700}.topbar h2{font:800 27px Manrope;letter-spacing:-.9px;margin:5px 0}.subtitle{color:var(--muted);font-size:13px}.status{display:flex;align-items:center;gap:8px;background:#e6f6f0;border:1px solid #c7ebdd;color:#14785e;padding:9px 12px;border-radius:30px;font-size:11px;font-weight:700;white-space:nowrap}.dot{width:7px;height:7px;background:#19a77c;border-radius:50%}.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end;background:white;border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:19px;box-shadow:var(--shadow)}.filter{display:flex;flex-direction:column;gap:6px;min-width:130px}.filter label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px}.filter select,.filter input{border:1px solid #dce5f0;border-radius:8px;background:#fff;padding:9px 10px;color:#26364a;outline:none;font-size:12px}.filter select:focus,.filter input:focus{border-color:var(--blue)}.filter-actions{display:flex;gap:8px;margin-left:auto}.btn{border:1px solid #dce5f0;background:white;color:#42536a;padding:9px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:18px}.kpi{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);min-width:0}.kpi-head{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:11px;font-weight:600}.kpi-icon{width:30px;height:30px;border-radius:9px;background:#edf4ff;color:var(--blue);display:grid;place-items:center;font-size:15px}.kpi-value{font:800 27px Manrope;letter-spacing:-1px;margin:13px 0 5px;color:#142d4e}.kpi-foot{font-size:11px;color:var(--muted)}.kpi-foot b{color:var(--blue)}.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:16px;margin-bottom:16px}.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:19px;box-shadow:var(--shadow);min-width:0}.panel-head{display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:16px}.panel h3{font:700 14px Manrope;margin:0;color:#1c304a}.panel-desc{font-size:11px;color:var(--muted);margin-top:5px}.panel-tag{font-size:10px;color:#64748b;background:#f3f6fa;padding:6px 8px;border-radius:6px;white-space:nowrap}.chart-wrap{height:250px;position:relative}.chart-wrap.small{height:235px}.lower-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,1fr);gap:16px}.table-wrap{overflow:auto;max-height:330px}table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#8190a5;padding:10px 9px;border-bottom:1px solid var(--line);white-space:nowrap}td{padding:12px 9px;border-bottom:1px solid #f0f3f8;white-space:nowrap}tbody tr:last-child td{border-bottom:0}.dept-name{font-weight:700;color:#293d56}.pill{display:inline-block;padding:5px 8px;border-radius:20px;background:#fff3e1;color:#a95d00;font-size:10px;font-weight:700}.pill.good{background:#e5f7ef;color:#13775d}.insights{display:grid;gap:10px}.insight{display:flex;gap:11px;padding:12px;border:1px solid #e9eef6;border-radius:10px;background:#fbfcfe}.insight-mark{width:29px;height:29px;border-radius:8px;display:grid;place-items:center;flex-shrink:0;background:#fff1e7;color:#b76518}.insight strong{display:block;font-size:12px;margin-bottom:4px}.insight p{font-size:11px;color:var(--muted);line-height:1.55;margin:0}.footer{display:flex;justify-content:space-between;gap:15px;color:#8794a7;font-size:10px;padding:20px 3px 0}.loading{padding:40px;text-align:center;color:var(--muted)}.error{background:#fff0f0;border:1px solid #ffd0d0;padding:18px;border-radius:12px;color:#a12727;font-size:13px}
+@media(max-width:1100px){.app{grid-template-columns:200px minmax(0,1fr)}.main{padding:24px 20px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid,.lower-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.app{display:block}.sidebar{padding:15px;gap:14px}.brand{padding:0}.sidebar .nav{display:none}.side-note{display:none}.main{padding:20px 13px}.topbar{align-items:flex-start;flex-direction:column}.topbar h2{font-size:23px}.filters{padding:12px}.filter{flex:1;min-width:42%}.filter-actions{margin-left:0;width:100%}.kpis{gap:9px}.kpi{padding:13px}.kpi-value{font-size:23px}.panel{padding:14px}.chart-wrap{height:230px}.footer{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-icon">+</div><div><h1>CareFlow Analytics</h1><p>HOSPITAL OPERATIONS INTELLIGENCE</p></div></div>
+  <div class="nav"><div class="nav-label">Workspace</div><div class="nav-item active"><span class="nav-icon">▦</span>Overview</div><div class="nav-item"><span class="nav-icon">◷</span>Time &amp; Demand</div><div class="nav-item"><span class="nav-icon">▤</span>Department Analysis</div><div class="nav-item"><span class="nav-icon">♧</span>Workforce Insights</div></div>
+  <div class="side-note"><strong>ⓘ Data transparency</strong>This dashboard uses synthetic patient-level data for demonstration. It does not represent a real hospital or real patients.</div>
+</aside>
+<main class="main">
+  <header class="topbar"><div><div class="eyebrow">Operations intelligence / 2025</div><h2>Patient Waiting-Time Analysis</h2><div class="subtitle">Understand patient flow, identify bottlenecks, and explore demand patterns.</div></div><div class="status"><span class="dot"></span> DATASET LOADED</div></header>
+  <section class="filters">
+    <div class="filter"><label for="fromDate">From date</label><input id="fromDate" type="date"></div>
+    <div class="filter"><label for="toDate">To date</label><input id="toDate" type="date"></div>
+    <div class="filter"><label for="department">Department</label><select id="department"><option value="All">All departments</option></select></div>
+    <div class="filter"><label for="acuity">Patient acuity</label><select id="acuity"><option value="All">All acuity levels</option><option>Routine</option><option>Urgent</option><option>High</option></select></div>
+    <div class="filter"><label for="threshold">Long wait threshold</label><select id="threshold"><option value="30">30+ minutes</option><option value="60" selected>60+ minutes</option><option value="90">90+ minutes</option><option value="120">120+ minutes</option></select></div>
+    <div class="filter-actions"><button class="btn" id="reset">Reset</button><button class="btn primary" id="export">Export filtered CSV ↓</button></div>
+  </section>
+  <div id="loading" class="loading">Loading synthetic hospital visit dataset…</div>
+  <div id="dashboard" hidden>
+    <section class="kpis">
+      <article class="kpi"><div class="kpi-head">Patient visits <span class="kpi-icon">♙</span></div><div class="kpi-value" id="visitsKpi">—</div><div class="kpi-foot">Visits matching current filters</div></article>
+      <article class="kpi"><div class="kpi-head">Median waiting time <span class="kpi-icon">◷</span></div><div class="kpi-value" id="medianKpi">—</div><div class="kpi-foot">Arrival to clinician start</div></article>
+      <article class="kpi"><div class="kpi-head">90th percentile wait <span class="kpi-icon">↗</span></div><div class="kpi-value" id="p90Kpi">—</div><div class="kpi-foot">Wait experienced by the longest-waiting 10%</div></article>
+      <article class="kpi"><div class="kpi-head">Long-wait rate <span class="kpi-icon">!</span></div><div class="kpi-value" id="longKpi">—</div><div class="kpi-foot" id="longFoot">Visits over selected threshold</div></article>
+    </section>
+    <section class="grid">
+      <article class="panel"><div class="panel-head"><div><h3>Waiting-time trend</h3><div class="panel-desc">Daily median and P90 waiting time</div></div><span class="panel-tag">MINUTES</span></div><div class="chart-wrap"><canvas id="trendChart"></canvas></div></article>
+      <article class="panel"><div class="panel-head"><div><h3>Arrivals by hour</h3><div class="panel-desc">When patient demand is highest</div></div><span class="panel-tag">VISITS</span></div><div class="chart-wrap"><canvas id="hourChart"></canvas></div></article>
+    </section>
+    <section class="grid">
+      <article class="panel"><div class="panel-head"><div><h3>Department performance</h3><div class="panel-desc">Median wait compared with the selected long-wait threshold</div></div><span class="panel-tag">BY DEPARTMENT</span></div><div class="chart-wrap"><canvas id="deptChart"></canvas></div></article>
+      <article class="panel"><div class="panel-head"><div><h3>Wait-time distribution</h3><div class="panel-desc">How visits are spread across waiting-time bands</div></div><span class="panel-tag">VISIT SHARE</span></div><div class="chart-wrap small"><canvas id="distChart"></canvas></div></article>
+    </section>
+    <section class="lower-grid">
+      <article class="panel"><div class="panel-head"><div><h3>Department scorecard</h3><div class="panel-desc">Volume, median wait, P90 wait, and long-wait rate</div></div><span class="panel-tag">RANKED BY P90</span></div><div class="table-wrap"><table><thead><tr><th>Department</th><th>Visits</th><th>Median</th><th>P90</th><th>Long waits</th></tr></thead><tbody id="deptTable"></tbody></table></div></article>
+      <article class="panel"><div class="panel-head"><div><h3>Operational signals</h3><div class="panel-desc">Data-led prompts for further investigation</div></div><span class="panel-tag">INSIGHTS</span></div><div class="insights" id="insights"></div></article>
+    </section>
+    <footer class="footer"><span>CareFlow Analytics · Portfolio demonstration</span><span>All encounter-level data is synthetic · Not for clinical staffing decisions</span></footer>
+  </div>
+  <div id="error" hidden class="error"></div>
+</main>
+</div>
+<script>
+const DATA_URL = "./data/visits_dashboard.csv";
+let allRows = [], charts = {};
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString("en-US");
+const mins = n => `${Math.round(n)} min`;
+function parseCSV(text){
+  const lines=text.trim().split(/\r?\n/); const headers=lines.shift().split(",");
+  return lines.map(line=>{const vals=line.split(",");const o={};headers.forEach((h,i)=>o[h]=vals[i]??"");return o;});
+}
+function quantile(arr,q){if(!arr.length)return 0;const s=[...arr].sort((a,b)=>a-b);const pos=(s.length-1)*q;const lo=Math.floor(pos),hi=Math.ceil(pos);return s[lo]+(s[hi]-s[lo])*(pos-lo)}
+function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0}
+function group(rows,key){const m={};rows.forEach(r=>{const k=key(r);(m[k]??=[]).push(r)});return m}
+function metric(rows){const waits=rows.map(r=>r.wait);const t=Number($("threshold").value);return {n:rows.length,median:quantile(waits,.5),p90:quantile(waits,.9),long:rows.filter(r=>r.wait>t).length,rate:rows.length?100*rows.filter(r=>r.wait>t).length/rows.length:0}}
+function initChart(id,type,data,options={}){
+ if(charts[id])charts[id].destroy();
+ charts[id]=new Chart($(id),{type,data,options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"index"},plugins:{legend:{labels:{usePointStyle:true,boxWidth:7,boxHeight:7,color:"#64748b",font:{family:"DM Sans",size:10}}},tooltip:{backgroundColor:"#142d4e",padding:10,cornerRadius:8}},scales:type==="doughnut"?{}:{x:{grid:{display:false},ticks:{color:"#8190a5",font:{size:10},maxRotation:0,autoSkip:true},border:{display:false}},y:{beginAtZero:true,grid:{color:"#edf1f6"},ticks:{color:"#8190a5",font:{size:10}},border:{display:false}}},...options}});
+}
+function filteredRows(){
+ const from=$("fromDate").value,to=$("toDate").value,dep=$("department").value,acuity=$("acuity").value;
+ return allRows.filter(r=>(!from||r.date>=from)&&(!to||r.date<=to)&&(dep==="All"||r.department===dep)&&(acuity==="All"||r.acuity===acuity));
+}
+function update(){
+ const rows=filteredRows(), t=Number($("threshold").value);
+ if(!rows.length){$("dashboard").hidden=true;$("loading").hidden=true;$("error").hidden=false;$("error").textContent="No visits match these filters. Please choose a wider date range or different filters.";return}
+ $("error").hidden=true;$("loading").hidden=true;$("dashboard").hidden=false;
+ const m=metric(rows);$("visitsKpi").textContent=fmt(m.n);$("medianKpi").textContent=mins(m.median);$("p90Kpi").textContent=mins(m.p90);$("longKpi").textContent=`${m.rate.toFixed(1)}%`;$("longFoot").textContent=`${fmt(m.long)} visits over ${t} minutes`;
+ const byDate=group(rows,r=>r.date), dates=Object.keys(byDate).sort();
+ const trendMedian=dates.map(d=>quantile(byDate[d].map(r=>r.wait),.5)),trendP90=dates.map(d=>quantile(byDate[d].map(r=>r.wait),.9));
+ initChart("trendChart","line",{labels:dates,datasets:[{label:"Median wait",data:trendMedian,borderColor:"#2d6cdf",backgroundColor:"#2d6cdf",borderWidth:2,pointRadius:0,tension:.28},{label:"P90 wait",data:trendP90,borderColor:"#32b8c6",backgroundColor:"#32b8c6",borderWidth:2,pointRadius:0,tension:.28}]},{plugins:{legend:{position:"bottom"}}});
+ const byHour=group(rows,r=>r.hour), hours=Array.from({length:24},(_,i)=>i);
+ initChart("hourChart","bar",{labels:hours.map(h=>`${String(h).padStart(2,"0")}:00`),datasets:[{label:"Patient visits",data:hours.map(h=>(byHour[h]||[]).length),backgroundColor:hours.map(h=>h>=9&&h<=16?"#2d6cdf":"#a9c5f5"),borderRadius:4,borderSkipped:false}]},{plugins:{legend:{display:false}}});
+ const byDept=group(rows,r=>r.department), depts=Object.keys(byDept).sort((a,b)=>quantile(byDept[b].map(r=>r.wait),.5)-quantile(byDept[a].map(r=>r.wait),.5));
+ initChart("deptChart","bar",{labels:depts,datasets:[{label:"Median wait (min)",data:depts.map(d=>quantile(byDept[d].map(r=>r.wait),.5)),backgroundColor:depts.map(d=>quantile(byDept[d].map(r=>r.wait),.5)>t?"#e9a04b":"#6c9beb"),borderRadius:5,borderSkipped:false}]},{indexAxis:"y",plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,grid:{color:"#edf1f6"},ticks:{color:"#8190a5",font:{size:10}},border:{display:false}},y:{grid:{display:false},ticks:{color:"#52647a",font:{size:10}},border:{display:false}}}});
+ const bands=[["0–30 min",0,30],["31–60 min",30,60],["61–90 min",60,90],["91–120 min",90,120],[">120 min",120,Infinity]];
+ const bandCounts=bands.map(b=>rows.filter(r=>r.wait>b[1]&&r.wait<=b[2]).length);
+ initChart("distChart","doughnut",{labels:bands.map(b=>b[0]),datasets:[{data:bandCounts,backgroundColor:["#6c9beb","#32b8c6","#f2b35e","#e98b66","#d85a68"],borderWidth:2,borderColor:"#fff",hoverOffset:5}]},{cutout:"66%",plugins:{legend:{position:"bottom",labels:{usePointStyle:true,boxWidth:7,font:{size:9}}}}});
+ $("deptTable").innerHTML=depts.map(d=>{const a=byDept[d],mm=metric(a);return `<tr><td class="dept-name">${d}</td><td>${fmt(mm.n)}</td><td>${Math.round(mm.median)} min</td><td>${Math.round(mm.p90)} min</td><td><span class="pill ${mm.rate<30?"good":""}">${mm.rate.toFixed(1)}%</span></td></tr>`}).join("");
+ const peak=hours.map(h=>({h,n:(byHour[h]||[]).length})).sort((a,b)=>b.n-a.n)[0];
+ const worst=depts[0], worstMetric=metric(byDept[worst]), overall=metric(rows);
+ const staffRows=rows.map(r=>({staff:r.staff,wait:r.wait})), lowStaff=staffRows.filter(r=>r.staff<=4), highStaff=staffRows.filter(r=>r.staff>=8);
+ const lowMedian=quantile(lowStaff.map(r=>r.wait),.5),highMedian=quantile(highStaff.map(r=>r.wait),.5);
+ const signals=[
+  {icon:"↗",title:`Peak arrival hour: ${String(peak.h).padStart(2,"0")}:00`,body:`${fmt(peak.n)} visits arrived in this hour in the selected data. Review whether front-desk, triage, and clinician coverage aligns with this demand.`},
+  {icon:"!",title:`Investigate ${worst} first`,body:`Highest department median in this selection: ${Math.round(worstMetric.median)} minutes, with a P90 of ${Math.round(worstMetric.p90)} minutes. Validate the pattern against real operational data.`},
+  {icon:"◷",title:`${overall.rate.toFixed(1)}% exceed ${t} minutes`,body:`${fmt(overall.long)} of ${fmt(overall.n)} visits exceed the selected threshold. Segment by acuity and time period before proposing changes.`},
+  {icon:"♧",title:"Staffing is a signal, not proof",body:lowStaff.length&&highStaff.length?`Synthetic records show a ${Math.round(lowMedian)}-minute median with ≤4 staff versus ${Math.round(highMedian)} minutes with ≥8 staff. This is descriptive only; case mix and demand may confound the comparison.`:"There are not enough records across staffing groups to compare them reliably."}
+ ];
+ $("insights").innerHTML=signals.map(s=>`<div class="insight"><div class="insight-mark">${s.icon}</div><div><strong>${s.title}</strong><p>${s.body}</p></div></div>`).join("");
+}
+function exportCSV(){
+ const rows=filteredRows(), t=Number($("threshold").value);
+ const cols=["visit_id","arrival_time","department","acuity","on_duty_staff","registration_to_triage_minutes","triage_to_clinician_minutes","total_wait_minutes","length_of_stay_minutes","outcome"];
+ const csv=[cols.join(","),...rows.map(r=>cols.map(c=>r.raw[c]??"").join(","))].join("\r\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="hospital_wait_time_filtered.csv";a.click();URL.revokeObjectURL(a.href);
+}
+async function boot(){
+ try{
+  const res=await fetch(DATA_URL);if(!res.ok)throw new Error(`Could not load ${DATA_URL} (HTTP ${res.status}). Make sure the data folder was uploaded to the GitHub repository.`);
+  const text=await res.text();const records=parseCSV(text);
+  allRows=records.map(r=>({raw:r,date:r.arrival_time.slice(0,10),hour:Number(r.arrival_hour),department:r.department,acuity:r.acuity,staff:Number(r.on_duty_staff),wait:Number(r.total_wait_minutes)})).filter(r=>r.date&&Number.isFinite(r.wait));
+  if(!allRows.length)throw new Error("The dataset loaded but no valid records were found.");
+  const dates=allRows.map(r=>r.date).sort();$("fromDate").value=dates[0];$("toDate").value=dates[dates.length-1];
+  [...new Set(allRows.map(r=>r.department))].sort().forEach(d=>{const o=document.createElement("option");o.value=d;o.textContent=d;$("department").appendChild(o)});
+  ["fromDate","toDate","department","acuity","threshold"].forEach(id=>$(id).addEventListener("change",update));
+  $("reset").addEventListener("click",()=>{$("fromDate").value=dates[0];$("toDate").value=dates[dates.length-1];$("department").value="All";$("acuity").value="All";$("threshold").value="60";update()});
+  $("export").addEventListener("click",exportCSV);update();
+ }catch(e){$("loading").hidden=true;$("error").hidden=false;$("error").textContent=e.message+" If opening index.html directly from your computer, use GitHub Pages or a local web server instead."}
+}
+boot();
+</script>
+</body>
+</html>
